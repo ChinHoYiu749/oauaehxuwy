@@ -140,6 +140,19 @@ window.RESTAURANTS = [
         note: "只能随缘在路边找停车位啦或者停绿地那边了qwq。南边 Palmer Place 路边，位置估算。"
       }
     ]
+  },
+
+  {
+    name: "Krung Thep Thai",
+    lat: -34.9043595,
+    lng: 138.5949712,
+    comment: "能吃的泰餐（",
+    info: "147 O'Connell St, North Adelaide SA 5006。电话 08 8367 0932。",
+    hours: {
+      mon: "17:00-21:00", tue: "17:00-21:00", wed: "closed", thu: "17:00-21:00",
+      fri: "17:00-21:30", sat: "17:00-21:30", sun: "17:00-21:00"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
