@@ -99,6 +99,19 @@ window.RESTAURANTS = [
       fri: "11:00-21:00", sat: "11:00-21:00", sun: "11:00-20:30"
     },
     parking: []
+  },
+
+  {
+    name: "Sushi Train Firle",
+    lat: -34.9027656,
+    lng: 138.6571038,
+    comment: "sushi train里面食材第二新鲜的（",
+    info: "Shop 3/161-167 Glynburn Rd, Firle SA 5070（Firle Shops）。电话 08 8117 3142。",
+    hours: {
+      mon: "11:00-21:00", tue: "11:00-21:00", wed: "11:00-21:00", thu: "11:00-21:00",
+      fri: "11:00-21:00", sat: "11:00-21:00", sun: "11:00-21:00"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
