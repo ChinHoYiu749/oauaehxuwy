@@ -283,6 +283,19 @@ window.RESTAURANTS = [
       fri: "12:00-15:00, 17:30-22:00", sat: "12:00-15:00, 17:30-22:00", sun: "12:00-15:00, 17:30-21:00"
     },
     parking: []
+  },
+
+  {
+    name: "Ambra Spirits Distillery Bar & Restaurant",
+    lat: -34.9141552,
+    lng: 138.5732464,
+    comment: "他有车轮芝士意面aaaa而且还是个做酒的aaaaa",
+    info: "43 Phillips St, Thebarton SA 5031。电话 08 8354 0611。",
+    hours: {
+      mon: "closed", tue: "closed", wed: "12:00-22:00", thu: "12:00-22:00",
+      fri: "12:00-0:00", sat: "12:00-0:00", sun: "12:00-21:00"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
