@@ -166,6 +166,19 @@ window.RESTAURANTS = [
       fri: "12:00-15:00, 17:30-22:30", sat: "12:00-15:00, 17:30-22:30", sun: "closed"
     },
     parking: []
+  },
+
+  {
+    name: "Pastel Wine Bar",
+    lat: -34.9078054,
+    lng: 138.5962703,
+    comment: "会拉丝的pasta和伟大的红酒！",
+    info: "47 O'Connell St, North Adelaide SA 5006。电话 08 8361 8714。",
+    hours: {
+      mon: "17:00-22:30", tue: "17:00-23:00", wed: "17:00-23:00", thu: "17:00-23:00",
+      fri: "12:00-0:00", sat: "17:00-0:00", sun: "closed"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
