@@ -231,6 +231,19 @@ window.RESTAURANTS = [
       fri: "8:00-3:00", sat: "8:00-3:00", sun: "8:00-2:00"
     },
     parking: []
+  },
+
+  {
+    name: "Fairview Chinese Restaurant 富景",
+    lat: -34.895479,
+    lng: 138.6371696,
+    comment: "噢印象中能吃",
+    info: "26 Lower Portrush Rd, Marden SA 5070。电话 08 8362 7270。",
+    hours: {
+      mon: "closed", tue: "17:00-20:30", wed: "17:00-20:30", thu: "17:00-20:30",
+      fri: "12:00-14:30, 17:00-21:00", sat: "12:00-14:30, 17:00-21:00", sun: "12:00-14:30, 17:00-20:30"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
