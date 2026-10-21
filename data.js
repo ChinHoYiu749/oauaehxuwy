@@ -179,6 +179,19 @@ window.RESTAURANTS = [
       fri: "12:00-0:00", sat: "17:00-0:00", sun: "closed"
     },
     parking: []
+  },
+
+  {
+    name: "Ting Ting",
+    lat: -34.9082666,
+    lng: 138.5970928,
+    comment: "最好吃的生腌qwq",
+    info: "26 O'Connell St, North Adelaide SA 5006。电话 0460 312 046。",
+    hours: {
+      mon: "17:30-21:30", tue: "17:30-21:30", wed: "closed", thu: "17:30-21:30",
+      fri: "11:00-15:00, 17:30-22:00", sat: "11:00-15:00, 17:30-22:00", sun: "11:00-15:00, 17:30-21:30"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
