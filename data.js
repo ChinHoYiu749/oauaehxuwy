@@ -205,6 +205,19 @@ window.RESTAURANTS = [
       fri: "17:00-22:00", sat: "12:00-14:30, 17:00-22:00", sun: "12:00-14:30, 17:00-21:00"
     },
     parking: []
+  },
+
+  {
+    name: "Gelato Messina North Adelaide",
+    lat: -34.9071282,
+    lng: 138.5965194,
+    comment: "好吃的冰淇淋店",
+    info: "Shop AG02, 88 O'Connell St, North Adelaide SA 5006。电话 0489 911 552。",
+    hours: {
+      mon: "12:00-22:30", tue: "12:00-22:30", wed: "12:00-22:30", thu: "12:00-22:30",
+      fri: "12:00-23:00", sat: "12:00-23:00", sun: "12:00-22:30"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
