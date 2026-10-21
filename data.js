@@ -112,6 +112,34 @@ window.RESTAURANTS = [
       fri: "11:00-21:00", sat: "11:00-21:00", sun: "11:00-21:00"
     },
     parking: []
+  },
+
+  {
+    name: "Yakisan",
+    lat: -34.9063487,
+    lng: 138.5963404,
+    comment: "日式fusion的fine dining 有一个带脆米的酒好喝",
+    info: "88 O'Connell St, North Adelaide SA 5006（Eighty Eight O'Connell）。电话 08 8166 5866。",
+    hours: {
+      mon: "17:00-23:00", tue: "closed", wed: "17:00-23:00", thu: "12:00-23:00",
+      fri: "12:00-23:30", sat: "12:00-23:30", sun: "12:00-23:00"
+    },
+    parking: [
+      {
+        type: "point",
+        name: "LeFevre Terrace 绿地停车",
+        lat: -34.9043443,
+        lng: 138.5993978,
+        note: "只能随缘在路边找停车位啦或者停绿地那边了qwq。东边公园旁的停车区，位置估算。"
+      },
+      {
+        type: "point",
+        name: "Brougham Gardens 绿地停车",
+        lat: -34.9104244,
+        lng: 138.5953283,
+        note: "只能随缘在路边找停车位啦或者停绿地那边了qwq。南边 Palmer Place 路边，位置估算。"
+      }
+    ]
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
