@@ -30,6 +30,28 @@ window.RESTAURANTS = [
         note: "就在店门口。"
       }
     ]
+  },
+
+  {
+    name: "Taste of Tianfu 天府小馆",
+    lat: -34.9004954,
+    lng: 138.6350866,
+    comment: "这家好香aaaaaa",
+    info: "Shop 5/297 Payneham Rd, Royston Park SA 5070。电话 0478 611 727。",
+    hours: {
+      mon: "closed",
+      tue: "17:00-21:00", wed: "17:00-21:00", thu: "17:00-21:00",
+      fri: "11:30-14:00, 17:00-21:00", sat: "11:30-14:00, 17:00-21:00", sun: "11:30-14:00, 17:00-21:00"
+    },
+    parking: [
+      {
+        type: "point",
+        name: "门口停车",
+        lat: -34.9005997,
+        lng: 138.6351765,
+        note: "店门口，位置估算。"
+      }
+    ]
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
