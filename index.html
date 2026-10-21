@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>吃什么</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1c2a26;
+    --ink-soft: #5a6a65;
+    --paper: #ffffff;
+    --paper-2: #f2f5f3;
+    --line: #d8e0dc;
+    --restaurant: #1f5c4e;
+    --parking: #d9a400;
+    --parking-ink: #5d4600;
+    --serif: "Noto Serif SC", "Songti SC", serif;
+    --sans: "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #eef2f0;
+      --ink-soft: #a3b0ab;
+      --paper: #182522;
+      --paper-2: #21302c;
+      --line: #334441;
+      --restaurant: #6fc2a9;
+      --parking: #e8b931;
+      --parking-ink: #f5dd8a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--paper);
+    overflow: hidden;
+  }
+  #map { position: absolute; inset: 0; }
+
+  /* 餐厅标记 */
+  .pin-restaurant {
+    width: 34px; height: 34px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: var(--restaurant);
+    border: 3px solid var(--paper);
+    box-shadow: 0 2px 6px rgba(0,0,0,.35);
+  }
+  .pin-restaurant.active { background: #e2553a; }
+  .pin-parking {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: var(--parking);
+    color: #2b2100;
+    font: 700 15px/26px var(--sans);
+    text-align: center;
+    border: 2px solid var(--paper);
+    box-shadow: 0 2px 5px rgba(0,0,0,.3);
+  }
+
+  /* 底部面板 */
+  #sheet {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: var(--paper);
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -6px 24px rgba(0,0,0,.18);
+    padding: 10px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    max-height: 72vh;
+    overflow-y: auto;
+    transform: translateY(105%);
+    transition: transform .28s ease;
+    z-index: 1000;
+  }
+  #sheet.open { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { #sheet { transition: none; } }
+  @media (min-width: 720px) {
+    #sheet { left: auto; right: 18px; bottom: 18px; width: 400px; border-radius: 18px; max-height: 80vh; }
+  }
+  .grip { width: 38px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 12px; }
+  .close {
+    position: absolute; top: 12px; right: 14px;
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 0; background: var(--paper-2); color: var(--ink-soft);
+    font-size: 18px; cursor: pointer;
+  }
+  h1 {
+    font: 700 24px/1.25 var(--serif);
+    margin: 0 44px 10px 0;
+  }
+  .comment {
+    font: 500 17px/1.6 var(--serif);
+    margin: 0 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--restaurant);
+  }
+  .info { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 16px; }
+
+  .dest-title { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; }
+  .dest {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; text-align: left;
+    padding: 10px 12px; margin-bottom: 6px;
+    border: 1.5px solid var(--line); border-radius: 10px;
+    background: var(--paper); color: var(--ink);
+    font: 400 15px/1.4 var(--sans);
+    cursor: pointer;
+  }
+  .dest.selected { border-color: var(--restaurant); background: var(--paper-2); }
+  .dest .badge {
+    flex: none; width: 26px; height: 26px; border-radius: 6px;
+    font-weight: 700; font-size: 14px; line-height: 26px; text-align: center;
+  }
+  .dest .badge.r { background: var(--restaurant); color: #fff; border-radius: 50%; }
+  .dest .badge.p { background: var(--parking); color: #2b2100; }
+  .dest .name { font-weight: 500; }
+  .dest .note { font-size: 13px; color: var(--ink-soft); }
+
+  .nav { display: flex; gap: 10px; margin-top: 14px; }
+  .nav a {
+    flex: 1; text-align: center; text-decoration: none;
+    padding: 13px 0; border-radius: 12px;
+    font: 500 15px var(--sans);
+    background: var(--restaurant); color: #fff;
+  }
+  .nav a.secondary { background: var(--paper-2); color: var(--ink); border: 1.5px solid var(--line); }
+  .nav a:focus-visible, .dest:focus-visible, .close:focus-visible { outline: 3px solid var(--parking); outline-offset: 2px; }
+  .leaflet-control-attribution { font-size: 10px; }
+
+  /* 筛选按钮 */
+  #filter {
+    position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; z-index: 1000;
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink);
+    font: 500 14px var(--sans); cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  }
+  #filter .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+  #filter.on { border-color: var(--restaurant); }
+  #filter.on .dot { background: #2fb37a; }
+  #filter:focus-visible { outline: 3px solid var(--parking); outline-offset: 2px; }
+
+  /* 营业状态 */
+  .status { display: inline-block; font-size: 13px; padding: 3px 9px; border-radius: 999px; margin: 0 0 10px; }
+  .status.open { background: rgba(47,179,122,.15); color: #1d7a52; }
+  .status.closed { background: rgba(226,85,58,.14); color: #b8432c; }
+  .status.unknown { background: var(--paper-2); color: var(--ink-soft); }
+  @media (prefers-color-scheme: dark) {
+    .status.open { color: #7fe0b4; }
+    .status.closed { color: #ff9a85; }
+  }
+  .hours { font-size: 13px; color: var(--ink-soft); margin: 0 0 12px; white-space: pre-line; }
+</style>
+</head>
+<body>
+<div id="map" role="application" aria-label="地图"></div>
+<button id="filter" aria-pressed="false" onclick="toggleFilter()"><span class="dot"></span><span id="filter-text">只看现在开门的</span></button>
+
+<section id="sheet" aria-live="polite">
+  <div class="grip"></div>
+  <button class="close" aria-label="关闭" onclick="closeSheet()">×</button>
+  <h1 id="s-name"></h1>
+  <span class="status" id="s-status"></span>
+  <p class="comment" id="s-comment"></p>
+  <p class="info" id="s-info"></p>
+  <p class="hours" id="s-hours"></p>
+  <p class="dest-title">导航到哪里？</p>
+  <div id="s-dests"></div>
+  <div class="nav">
+    <a id="nav-google" target="_blank" rel="noopener">Google 地图</a>
+    <a id="nav-apple" class="secondary" target="_blank" rel="noopener">Apple 地图</a>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="data.js"></script>
+<script>
+  const map = L.map('map', { zoomControl: false });
+  L.control.zoom({ position: 'topright' }).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  const restaurantIcon = active => L.divIcon({
+    className: '',
+    html: `<div class="pin-restaurant${active ? ' active' : ''}"></div>`,
+    iconSize: [34, 34], iconAnchor: [17, 34]
+  });
+  const parkingIcon = n => L.divIcon({
+    className: '',
+    html: `<div class="pin-parking">P</div>`,
+    iconSize: [26, 26], iconAnchor: [13, 13]
+  });
+
+  const data = window.RESTAURANTS || [];
+
+  // ---- 营业时间 ----
+  const DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
+  const DAY_CN = ['周日','周一','周二','周三','周四','周五','周六'];
+  const TZ = 'Australia/Adelaide';
+  function nowParts() {
+    const f = new Intl.DateTimeFormat('en-AU', { timeZone: TZ, weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+    const o = {}; f.formatToParts(new Date()).forEach(x => o[x.type] = x.value);
+    const day = DAYS.indexOf(o.weekday.toLowerCase().slice(0,3));
+    return { day, mins: (parseInt(o.hour) % 24) * 60 + parseInt(o.minute) };
+  }
+  // "8:00-21:30, 17:00-22:00" -> [[480,1290],[1020,1320]]；跨夜 "17:00-01:00" 结束加 24h
+  function parseRanges(str) {
+    if (!str || /closed|休/.test(str)) return [];
+    return str.split(',').map(x => x.trim()).filter(Boolean).map(seg => {
+      const [a, b] = seg.split('-').map(t => { const [h, m] = t.trim().split(':').map(Number); return h * 60 + (m || 0); });
+      return [a, b <= a ? b + 1440 : b];
+    });
+  }
+  // 返回 { state: 'open'|'closed'|'unknown', text }
+  function openStatus(r) {
+    if (!r.hours) return { state: 'unknown', text: '没填营业时间' };
+    const { day, mins } = nowParts();
+    const today = parseRanges(r.hours[DAYS[day]]);
+    const yday = parseRanges(r.hours[DAYS[(day + 6) % 7]]);
+    const fmt = m => { m = m % 1440; return `${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`; };
+    // 昨天跨夜还没结束
+    for (const [a, b] of yday) if (b > 1440 && mins < b - 1440) return { state: 'open', text: `营业中，${fmt(b)} 关门` };
+    for (const [a, b] of today) {
+      if (mins >= a && mins < b) {
+        const left = b - mins;
+        return { state: 'open', text: left <= 60 ? `营业中，还有 ${left} 分钟关门` : `营业中，${fmt(b)} 关门` };
+      }
+      if (mins < a) return { state: 'closed', text: `还没开，${fmt(a)} 开门` };
+    }
+    return { state: 'closed', text: today.length ? '今天已关门' : '今天休息' };
+  }
+  function hoursText(r) {
+    if (!r.hours) return '';
+    return DAYS.map((d, i) => `${DAY_CN[i]}  ${r.hours[d] || '休息'}`).join('\n');
+  }
+  function isOpenNow(r) { return openStatus(r).state === 'open'; }
+
+  let filterOn = false;
+  function toggleFilter() {
+    filterOn = !filterOn;
+    const btn = document.getElementById('filter');
+    btn.classList.toggle('on', filterOn);
+    btn.setAttribute('aria-pressed', filterOn);
+    applyFilter();
+  }
+  function applyFilter() {
+    let shown = 0;
+    markers.forEach((m, i) => {
+      const show = !filterOn || isOpenNow(data[i]);
+      if (show) { m.addTo(map); shown++; } else { m.remove(); }
+    });
+    document.getElementById('filter-text').textContent = filterOn ? `现在开门的：${shown} 家` : '只看现在开门的';
+    if (filterOn && activeIdx !== null && !isOpenNow(data[activeIdx])) closeSheet();
+  }
+  setInterval(() => { if (filterOn) applyFilter(); if (activeIdx !== null) showStatus(data[activeIdx]); }, 60000);
+  function showStatus(r) {
+    const st = openStatus(r);
+    const el = document.getElementById('s-status');
+    el.className = 'status ' + st.state;
+    el.textContent = st.text;
+    document.getElementById('s-hours').textContent = hoursText(r);
+  }
+  const sheet = document.getElementById('sheet');
+  const parkingLayer = L.layerGroup().addTo(map);
+  let markers = [], activeIdx = null, dest = null;
+
+  // 放餐厅标记
+  data.forEach((r, i) => {
+    const m = L.marker([r.lat, r.lng], { icon: restaurantIcon(false), title: r.name }).addTo(map);
+    m.on('click', () => openRestaurant(i));
+    markers.push(m);
+  });
+  if (data.length) {
+    map.fitBounds(L.latLngBounds(data.map(r => [r.lat, r.lng])).pad(0.3), { maxZoom: 15 });
+  } else {
+    map.setView([-34.9285, 138.6007], 12);
+  }
+
+  function openRestaurant(i) {
+    const r = data[i];
+    activeIdx = i;
+    markers.forEach((m, k) => m.setIcon(restaurantIcon(k === i)));
+
+    document.getElementById('s-name').textContent = r.name;
+    document.getElementById('s-comment').textContent = r.comment || '';
+    document.getElementById('s-info').textContent = r.info || '';
+    showStatus(r);
+
+    // 停车点画到地图上
+    parkingLayer.clearLayers();
+    const bounds = L.latLngBounds([[r.lat, r.lng]]);
+    (r.parking || []).forEach(p => {
+      if (p.type === 'street' && p.coords) {
+        L.polyline(p.coords, { color: '#d9a400', weight: 7, opacity: .85 }).addTo(parkingLayer);
+        p.coords.forEach(c => bounds.extend(c));
+      } else {
+        L.marker([p.lat, p.lng], { icon: parkingIcon(), title: p.name }).addTo(parkingLayer);
+        bounds.extend([p.lat, p.lng]);
+      }
+    });
+
+    // 目的地列表：餐厅本身 + 每个停车点
+    const dests = [{ kind: 'r', name: r.name, note: '餐厅本身', lat: r.lat, lng: r.lng }];
+    (r.parking || []).forEach(p => {
+      const ll = p.type === 'street' ? p.coords[0] : [p.lat, p.lng];
+      dests.push({ kind: 'p', name: p.name, note: p.note || '', lat: ll[0], lng: ll[1] });
+    });
+    const box = document.getElementById('s-dests');
+    box.innerHTML = '';
+    dests.forEach((d, k) => {
+      const b = document.createElement('button');
+      b.className = 'dest';
+      b.innerHTML = `<span class="badge ${d.kind}">${d.kind === 'r' ? '●' : 'P'}</span>
+        <span><div class="name"></div><div class="note"></div></span>`;
+      b.querySelector('.name').textContent = d.name;
+      b.querySelector('.note').textContent = d.note;
+      b.onclick = () => selectDest(k);
+      box.appendChild(b);
+    });
+    sheet._dests = dests;
+    // 默认选第一个停车点（有的话），否则餐厅
+    selectDest(dests.length > 1 ? 1 : 0);
+
+    sheet.classList.add('open');
+    map.fitBounds(bounds.pad(0.4), { maxZoom: 17, paddingBottomRight: [0, window.innerWidth < 720 ? 280 : 0] });
+  }
+
+  function selectDest(k) {
+    dest = sheet._dests[k];
+    document.querySelectorAll('.dest').forEach((el, i) => el.classList.toggle('selected', i === k));
+    const ll = `${dest.lat},${dest.lng}`;
+    document.getElementById('nav-google').href =
+      `https://www.google.com/maps/dir/?api=1&destination=${ll}`;
+    document.getElementById('nav-apple').href =
+      `https://maps.apple.com/?daddr=${ll}&q=${encodeURIComponent(dest.name)}`;
+  }
+
+  function closeSheet() {
+    sheet.classList.remove('open');
+    parkingLayer.clearLayers();
+    markers.forEach(m => m.setIcon(restaurantIcon(false)));
+    activeIdx = null;
+  }
+  map.on('click', closeSheet);
+
+  // iPhone 上把 Apple 地图放前面
+  if (/iPhone|iPad/.test(navigator.userAgent)) {
+    const nav = document.querySelector('.nav');
+    nav.appendChild(document.getElementById('nav-google'));
+    document.getElementById('nav-apple').classList.remove('secondary');
+    document.getElementById('nav-google').classList.add('secondary');
+  }
+</script>
+</body>
+</html>
