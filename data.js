@@ -153,6 +153,19 @@ window.RESTAURANTS = [
       fri: "17:00-21:30", sat: "17:00-21:30", sun: "17:00-21:00"
     },
     parking: []
+  },
+
+  {
+    name: "ODÉ Bistro",
+    lat: -34.9043553,
+    lng: 138.5950023,
+    comment: "华人开的fine dining嘛但是我没吃过欸",
+    info: "151 O'Connell St, North Adelaide SA 5006。电话 0408 276 198。",
+    hours: {
+      mon: "closed", tue: "18:00-21:30", wed: "18:00-21:30", thu: "18:00-21:30",
+      fri: "12:00-15:00, 17:30-22:30", sat: "12:00-15:00, 17:30-22:30", sun: "closed"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
