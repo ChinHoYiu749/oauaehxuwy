@@ -218,6 +218,19 @@ window.RESTAURANTS = [
       fri: "12:00-23:00", sat: "12:00-23:00", sun: "12:00-22:30"
     },
     parking: []
+  },
+
+  {
+    name: "Da Vinci Ristorante",
+    lat: -34.9089331,
+    lng: 138.5971573,
+    comment: "半夜才去的份量很大但是不好吃qwq",
+    info: "10 O'Connell St, North Adelaide SA 5006。电话 08 7184 5105。",
+    hours: {
+      mon: "8:00-2:00", tue: "8:00-2:00", wed: "8:00-2:00", thu: "8:00-2:00",
+      fri: "8:00-3:00", sat: "8:00-3:00", sun: "8:00-2:00"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
