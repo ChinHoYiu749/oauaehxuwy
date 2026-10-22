@@ -10,6 +10,22 @@
 //   "closed"（或者不写那一天）    休息
 // 没写 hours 的餐厅会显示"没填营业时间"，开"只看现在开门的"时会被藏起来。
 
+// ---- 按区域共用的停车位 ----
+// 餐厅面板按「停车」时，地图上会显示：这家餐厅自己的 parking，加上下面所有离餐厅
+// 不超过 PARKING_RADIUS 米的区域停车位。餐厅专属的（店门口、店后停车场）还是写在餐厅自己的 parking 里。
+// 每个区域：area 区域名 / spots 停车位列表，spots 的写法和餐厅的 parking 一样。
+window.PARKING_RADIUS = 500;
+window.PARKING_AREAS = [
+  // {
+  //   area: "North Adelaide",
+  //   spots: [
+  //     { type: "point",  name: "Brougham Gardens 绿地停车", lat: -34.9104, lng: 138.5953, note: "免费" },
+  //     { type: "street", name: "Tynte St 路边位", coords: [[-34.9065, 138.5950], [-34.9060, 138.5985]], note: "2 小时免费" }
+  //   ]
+  // }
+];
+
+// ---- 餐厅清单 ----
 window.RESTAURANTS = [
   {
     name: "Gico Eatery",

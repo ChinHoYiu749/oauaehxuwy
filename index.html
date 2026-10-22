@@ -167,6 +167,7 @@
   .chosen { padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--hot); }
   .chosen .name { font: 700 17px/1.4 var(--serif); }
   .chosen .note { font-size: 13px; line-height: 1.5; color: var(--ink-soft); margin-top: 2px; }
+  .chosen .meta { font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
   .chosen .nav { margin-top: 10px; }
 
   /* 筛选按钮 */
@@ -232,6 +233,7 @@
   <div class="chosen" id="p-chosen" hidden>
     <div class="name" id="p-name"></div>
     <div class="note" id="p-note"></div>
+    <div class="meta" id="p-meta"></div>
     <div class="nav">
       <a id="pnav-google" target="_blank" rel="noopener">Google 地图</a>
       <a id="pnav-apple" class="secondary" target="_blank" rel="noopener">Apple 地图</a>
@@ -262,6 +264,8 @@
   const HOT = '#e0262c', WARM = '#d9a400';   // 停车点颜色：选停车位模式 / 平时
 
   const data = window.RESTAURANTS || [];
+  const areas = window.PARKING_AREAS || [];       // 按区域共用的停车位
+  const RADIUS = window.PARKING_RADIUS || 500;    // 区域停车位离餐厅多少米以内才显示
 
   // ---- 营业时间 ----
   const DAYS = ['sun','mon','tue','wed','thu','fri','sat'];
@@ -356,18 +360,18 @@
       `https://maps.apple.com/?daddr=${ll}&q=${encodeURIComponent(name)}`;
   }
 
-  // 把停车点画到地图上，返回包含餐厅和所有停车点的范围。
-  // hot=true 是选停车位模式：标红、放大。平时黄色；平时点到停车点也会直接进选停车位模式。
+  // 把停车位画到地图上（餐厅自己的 + 附近的区域停车位），返回包含餐厅和所有停车位的范围。
+  // hot=true 是选停车位模式：标红、放大。平时黄色；平时点到停车位也会直接进选停车位模式。
   function drawParking(r, hot) {
     parkingLayer.clearLayers();
     const bounds = L.latLngBounds([[r.lat, r.lng]]);
     const color = hot ? HOT : WARM;
-    (r.parking || []).forEach(p => {
+    spotsFor(r).forEach(p => {
       if (p.type === 'street' && p.coords) {
         L.polyline(p.coords, { color, weight: hot ? 9 : 7, opacity: .85, interactive: false }).addTo(parkingLayer);
-        // 叠一条透明的宽线接收点击，手指容易点中
+        // 叠一条透明的宽线接收点击，手指容易点中；点到哪里就吸到线上最近的点
         L.polyline(p.coords, { weight: 30, opacity: 0, bubblingMouseEvents: false })
-          .on('click', e => pickParking(p, snapToLine(p.coords, e.latlng)))
+          .on('click', e => pickParking(p, nearestOnStreet(p.coords, e.latlng)))
           .addTo(parkingLayer);
         p.coords.forEach(c => bounds.extend(c));
       } else {
@@ -380,16 +384,30 @@
     return bounds;
   }
 
-  // 点在街道附近的位置，吸到线上最近的点
-  function snapToLine(coords, latlng) {
-    const p = map.latLngToLayerPoint(latlng);
-    let best = p, bestD = Infinity;
+  // 一条街（折线）上离 latlng 最近的点。用固定缩放级别投影，不依赖当前视图。
+  function nearestOnStreet(coords, latlng) {
+    const z = 18, p = map.project(latlng, z);
+    let best = null, bestD = Infinity;
     for (let i = 0; i + 1 < coords.length; i++) {
-      const q = L.LineUtil.closestPointOnSegment(p, map.latLngToLayerPoint(coords[i]), map.latLngToLayerPoint(coords[i + 1]));
+      const q = L.LineUtil.closestPointOnSegment(p, map.project(coords[i], z), map.project(coords[i + 1], z));
       const d = p.distanceTo(q);
       if (d < bestD) { bestD = d; best = q; }
     }
-    return map.layerPointToLatLng(best);
+    return best ? map.unproject(best, z) : L.latLng(coords[0]);
+  }
+  // 一个停车位离某个点多少米（街道按线上最近的点算）
+  function distTo(p, from) {
+    const ll = p.type === 'street' && p.coords ? nearestOnStreet(p.coords, from) : L.latLng(p.lat, p.lng);
+    return from.distanceTo(ll);
+  }
+  // 这家餐厅能用的停车位：自己写的 parking，加上区域停车位里离餐厅不超过 RADIUS 米的
+  function spotsFor(r) {
+    const from = L.latLng(r.lat, r.lng);
+    const list = (r.parking || []).map(p => Object.assign({}, p, { area: '' }));
+    areas.forEach(a => (a.spots || []).forEach(p => {
+      if (distTo(p, from) <= RADIUS) list.push(Object.assign({}, p, { area: a.area || '' }));
+    }));
+    return list;
   }
 
   function openRestaurant(i) {
@@ -407,9 +425,9 @@
 
     const bounds = drawParking(r, false);
 
-    const n = (r.parking || []).length;
+    const n = spotsFor(r).length;
     document.getElementById('btn-parking').disabled = !n;
-    document.getElementById('s-parking-sub').textContent = n ? `记了 ${n} 个停车位，在地图上选一个` : '没记停车位';
+    document.getElementById('s-parking-sub').textContent = n ? `附近 ${n} 个停车位，在地图上选一个` : '附近没记停车位';
 
     setNav('nav', r.lat, r.lng, r.name);
 
@@ -420,7 +438,7 @@
   // 按「停车」：收起餐厅面板，停车点标红，等用户在地图上点
   function enterParking() {
     const r = data[activeIdx];
-    if (!r || !(r.parking || []).length) return;
+    if (!r || !spotsFor(r).length) return;
     parkingMode = true;
     markers.forEach(m => m.setIcon(restaurantIcon(false)));
     const bounds = drawParking(r, true);
@@ -440,6 +458,9 @@
     L.circleMarker(latlng, { radius: 22, color: HOT, weight: 4, fillColor: HOT, fillOpacity: .15, interactive: false }).addTo(chosenLayer);
     document.getElementById('p-name').textContent = p.name;
     document.getElementById('p-note').textContent = p.note || '';
+    const r = data[activeIdx];
+    const metres = Math.round(L.latLng(r.lat, r.lng).distanceTo(latlng) / 10) * 10;
+    document.getElementById('p-meta').textContent = [p.area, `离餐厅约 ${metres} 米`].filter(Boolean).join(' · ');
     setNav('pnav', latlng.lat.toFixed(6), latlng.lng.toFixed(6), p.name);
     document.getElementById('p-hint').hidden = true;
     document.getElementById('p-chosen').hidden = false;

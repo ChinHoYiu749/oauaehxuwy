@@ -5,14 +5,29 @@
 ## 文件
 
 - `index.html` — 地图页面。逻辑已经写好，没有明确要求不要改。
-- `data.js` — 餐厅清单。**几乎所有维护工作都是改这个文件。**
+- `data.js` — 餐厅清单 + 按区域共用的停车位。**几乎所有维护工作都是改这个文件。**
 - `.claude/commands/add.md` — `/add` 命令：从 Google Maps 链接加一家餐厅。
+- `.claude/commands/parking.md` — `/parking` 命令：把一个区域的停车位写进 `PARKING_AREAS`。
+
+页面上的流程：点餐厅 → 面板里按「停车」→ 地图上停车位标红 → 点一个 → 出导航。
 
 没有构建步骤，没有依赖。改完 data.js 推到 main 分支，GitHub Pages 一两分钟后自动更新。
 
 ## data.js 的结构
 
 ```js
+// 按区域共用的停车位。餐厅按「停车」时，显示它自己的 parking + 离它不超过 PARKING_RADIUS 米的区域停车位。
+window.PARKING_RADIUS = 500;
+window.PARKING_AREAS = [
+  {
+    area: "North Adelaide",
+    spots: [                                 // 写法和餐厅的 parking 一样
+      { type: "point",  name: "停车场名", lat: ..., lng: ..., note: "备注" },
+      { type: "street", name: "某街路边位", coords: [[lat,lng],[lat,lng]], note: "备注" }
+    ]
+  }
+];
+
 window.RESTAURANTS = [
   {
     name: "餐厅名",
@@ -38,6 +53,8 @@ window.RESTAURANTS = [
 - `comment` 是我写的，照抄，不改措辞、不加标点润色。
 - `hours` 七天都写全；拿不到营业时间就不要编，留空并告诉我。
 - 停车点坐标是估的就在 `note` 里说明"位置估算"。
+- 一片区域都能用的停车位（某条街路边、公共停车场、绿地）写进 `PARKING_AREAS`，不要给每家餐厅重复写；只有这家店专属的（店门口、店后停车场）才写进餐厅自己的 `parking`。
+- 区域停车位的 `street` 只取靠近餐厅扎堆处的一段，2–4 个点；太长的街拆成几段分别写。
 
 ## 从 Google Maps 链接拿坐标
 

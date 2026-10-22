@@ -8,7 +8,8 @@
    - "门口停车"、"店门口" → 一个 point，坐标用餐厅坐标往街道方向偏 20 米左右，note 写"店门口，位置估算"。
    - 提到具体停车场名字 → WebSearch 查它的位置，写成 point。
    - 提到某条街 → 查那条街靠近餐厅的一段，写成 street，两三个坐标点。
-   - 没提停车 → parking 留空数组。
+   - 说的是这一片都能用的停车（公共停车场、某条街路边、绿地）→ 写进 `window.PARKING_AREAS` 对应区域的 spots（没有这个区域就新建），不写进这家餐厅的 parking。做法见 `/parking`（`.claude/commands/parking.md`）。
+   - 没提停车 → parking 留空数组。附近有区域停车位的话页面会自动显示，不用重复写。
 3. 用 WebSearch 找营业时间，按 hours 格式填。找不到就留空，在最后告诉我。
 4. 地址和电话放进 `info`。
 5. 把新对象加到 `window.RESTAURANTS` 数组末尾，注意前一个对象后面的逗号。
