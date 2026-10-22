@@ -52,6 +52,14 @@ window.PARKING_AREAS = [
         // George St 路口到 Portrush Rd 路口这一段
         coords: [[-34.921120, 138.636500], [-34.921016, 138.638685], [-34.920970, 138.640945]],
         note: "norwood 的parking就是 the parade。George street到portrush road这段。"
+      },
+      {
+        type: "point",
+        name: "Coles Norwood 后门停车场",
+        // Coles 楼西侧那片停车场的中心（OSM 的停车场范围），不是 The Parade 正门
+        lat: -34.921900,
+        lng: 138.635000,
+        note: "Coles Norwood 的后门。"
       }
     ]
   }
