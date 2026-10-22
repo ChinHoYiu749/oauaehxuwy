@@ -32,6 +32,13 @@ window.PARKING_AREAS = [
         // 南端 Brougham Place 到北端 Barton Terrace East，整条街
         coords: [[-34.908390, 138.601390], [-34.905360, 138.600356], [-34.902350, 138.599340]],
         note: "整条街都有 on street parking。"
+      },
+      {
+        type: "street",
+        name: "Tynte St 路边位",
+        // 西端 Jeffcott St 到东端 LeFevre Terrace，整条街，中间那个点是 O'Connell St 路口
+        coords: [[-34.906742, 138.592151], [-34.905982, 138.595812], [-34.905012, 138.600231]],
+        note: "上面也很多车位 45度角那种 因为其他很多街道都是resident car park但是这条街不是"
       }
     ]
   }
