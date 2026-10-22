@@ -387,6 +387,19 @@ window.RESTAURANTS = [
       fri: "11:00-15:00, 17:00-21:00", sat: "11:00-15:00, 17:00-21:00", sun: "11:00-20:00"
     },
     parking: []
+  },
+
+  {
+    name: "Kazumi Ramen Norwood",
+    lat: -34.9213984,
+    lng: 138.6346467,
+    comment: "饭堂品质",
+    info: "150 The Parade, Norwood SA 5067。Walk-in only，不用订位，官网没列电话。",
+    hours: {
+      mon: "11:30-20:30", tue: "11:30-20:30", wed: "11:30-20:30", thu: "11:30-20:30",
+      fri: "11:30-20:30", sat: "11:30-20:30", sun: "11:30-20:30"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
