@@ -88,6 +88,7 @@
     z-index: 1000;
   }
   #sheet.open, #pbar.open { transform: translateY(0); }
+  #sheet.dragging, #pbar.dragging { transition: none; }   /* 手指拖的时候跟手，不要动画 */
   @media (prefers-reduced-motion: reduce) { #sheet, #pbar { transition: none; } }
   @media (min-width: 720px) {
     #sheet, #pbar { left: auto; right: 18px; bottom: 18px; width: 400px; border-radius: 18px; max-height: 80vh; }
@@ -488,6 +489,40 @@
   }
   // 选停车位模式下点空白地图不关面板，免得想点街道没点准就退出了
   map.on('click', () => { if (!parkingMode) closeSheet(); });
+
+  // 手机上下拉面板：内容滚到顶的时候往下拉，面板跟着手指走，拉过 90px 松手就关掉，不够就弹回去。
+  // 往上滑或者内容还没滚到顶，都交给正常滚动。
+  function makeDraggable(panel, onDismiss) {
+    let y0 = null, dy = 0, dragging = false;
+    panel.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1) return;
+      y0 = e.touches[0].clientY; dy = 0; dragging = false;
+    }, { passive: true });
+    panel.addEventListener('touchmove', e => {
+      if (y0 === null || e.touches.length !== 1) return;
+      const y = e.touches[0].clientY, d = y - y0;
+      if (!dragging) {
+        if (d > 8 && panel.scrollTop <= 0) { dragging = true; y0 = y; panel.classList.add('dragging'); }
+        else if (d < -8) { y0 = null; }   // 往上滑：不管
+        return;
+      }
+      dy = Math.max(0, y - y0);
+      panel.style.transform = `translateY(${dy}px)`;
+      e.preventDefault();
+    }, { passive: false });
+    const end = () => {
+      if (y0 === null && !dragging) return;
+      y0 = null;
+      panel.classList.remove('dragging');
+      panel.style.transform = '';
+      if (dragging && dy > 90) onDismiss();
+      dragging = false; dy = 0;
+    };
+    panel.addEventListener('touchend', end);
+    panel.addEventListener('touchcancel', end);
+  }
+  makeDraggable(sheet, closeSheet);
+  makeDraggable(pbar, exitParking);
 
   // iPhone 上把 Apple 地图放前面（两个面板的导航按钮都换）
   if (/iPhone|iPad/.test(navigator.userAgent)) {
