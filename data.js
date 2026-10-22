@@ -41,6 +41,19 @@ window.PARKING_AREAS = [
         note: "上面也很多车位 45度角那种 因为其他很多街道都是resident car park但是这条街不是"
       }
     ]
+  },
+
+  {
+    area: "Norwood",
+    spots: [
+      {
+        type: "street",
+        name: "The Parade 路边位",
+        // George St 路口到 Portrush Rd 路口这一段
+        coords: [[-34.921120, 138.636500], [-34.921016, 138.638685], [-34.920970, 138.640945]],
+        note: "norwood 的parking就是 the parade。George street到portrush road这段。"
+      }
+    ]
   }
 
   // 下一个区域从这里加，记得上一个后面加逗号。spots 的写法和餐厅的 parking 一样：
