@@ -18,6 +18,7 @@
     --restaurant: #1f5c4e;
     --parking: #d9a400;
     --parking-ink: #5d4600;
+    --hot: #e0262c;
     --serif: "Noto Serif SC", "Songti SC", serif;
     --sans: "Noto Sans SC", "PingFang SC", system-ui, sans-serif;
   }
@@ -31,6 +32,7 @@
       --restaurant: #6fc2a9;
       --parking: #e8b931;
       --parking-ink: #f5dd8a;
+      --hot: #ff5c61;
     }
   }
   * { box-sizing: border-box; }
@@ -53,6 +55,7 @@
     box-shadow: 0 2px 6px rgba(0,0,0,.35);
   }
   .pin-restaurant.active { background: #e2553a; }
+  /* 停车点标记：平时黄色；选停车位模式下标红、放大 */
   .pin-parking {
     width: 26px; height: 26px;
     border-radius: 6px;
@@ -63,9 +66,16 @@
     border: 2px solid var(--paper);
     box-shadow: 0 2px 5px rgba(0,0,0,.3);
   }
+  .pin-parking.hot {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: #e0262c;
+    color: #fff;
+    font: 700 18px/30px var(--sans);
+  }
 
-  /* 底部面板 */
-  #sheet {
+  /* 底部面板（餐厅面板 #sheet 和选停车位面板 #pbar 共用） */
+  #sheet, #pbar {
     position: absolute; left: 0; right: 0; bottom: 0;
     background: var(--paper);
     border-radius: 18px 18px 0 0;
@@ -77,10 +87,10 @@
     transition: transform .28s ease;
     z-index: 1000;
   }
-  #sheet.open { transform: translateY(0); }
-  @media (prefers-reduced-motion: reduce) { #sheet { transition: none; } }
+  #sheet.open, #pbar.open { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) { #sheet, #pbar { transition: none; } }
   @media (min-width: 720px) {
-    #sheet { left: auto; right: 18px; bottom: 18px; width: 400px; border-radius: 18px; max-height: 80vh; }
+    #sheet, #pbar { left: auto; right: 18px; bottom: 18px; width: 400px; border-radius: 18px; max-height: 80vh; }
   }
   .grip { width: 38px; height: 4px; border-radius: 2px; background: var(--line); margin: 0 auto 12px; }
   .close {
@@ -102,24 +112,27 @@
   .info { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin: 0 0 16px; }
 
   .dest-title { font-size: 13px; color: var(--ink-soft); margin: 0 0 8px; }
-  .dest {
+
+  /* 餐厅面板里的「停车」按钮 */
+  .parking-btn {
     display: flex; align-items: center; gap: 12px;
     width: 100%; text-align: left;
-    padding: 10px 12px; margin-bottom: 6px;
-    border: 1.5px solid var(--line); border-radius: 10px;
+    padding: 11px 14px; margin: 0 0 16px;
+    border: 1.5px solid var(--parking); border-radius: 12px;
     background: var(--paper); color: var(--ink);
-    font: 400 15px/1.4 var(--sans);
+    font: 500 15px/1.4 var(--sans);
     cursor: pointer;
   }
-  .dest.selected { border-color: var(--restaurant); background: var(--paper-2); }
-  .dest .badge {
-    flex: none; width: 26px; height: 26px; border-radius: 6px;
-    font-weight: 700; font-size: 14px; line-height: 26px; text-align: center;
+  .parking-btn .badge {
+    flex: none; width: 28px; height: 28px; border-radius: 7px;
+    background: var(--parking); color: #2b2100;
+    font-weight: 700; font-size: 15px; line-height: 28px; text-align: center;
   }
-  .dest .badge.r { background: var(--restaurant); color: #fff; border-radius: 50%; }
-  .dest .badge.p { background: var(--parking); color: #2b2100; }
-  .dest .name { font-weight: 500; }
-  .dest .note { font-size: 13px; color: var(--ink-soft); }
+  .parking-btn .sub { display: block; font-size: 13px; color: var(--ink-soft); }
+  .parking-btn .chev { margin-left: auto; font-size: 20px; color: var(--ink-soft); }
+  .parking-btn:disabled { cursor: default; border-color: var(--line); color: var(--ink-soft); }
+  .parking-btn:disabled .badge { background: var(--line); color: var(--ink-soft); }
+  .parking-btn:disabled .chev { display: none; }
 
   .nav { display: flex; gap: 10px; margin-top: 14px; }
   .nav a {
@@ -129,8 +142,32 @@
     background: var(--restaurant); color: #fff;
   }
   .nav a.secondary { background: var(--paper-2); color: var(--ink); border: 1.5px solid var(--line); }
-  .nav a:focus-visible, .dest:focus-visible, .close:focus-visible { outline: 3px solid var(--parking); outline-offset: 2px; }
+  .nav a:focus-visible, .parking-btn:focus-visible, .back:focus-visible, .close:focus-visible { outline: 3px solid var(--parking); outline-offset: 2px; }
   .leaflet-control-attribution { font-size: 10px; }
+
+  /* 选停车位面板 */
+  .back {
+    position: absolute; top: 12px; right: 14px;
+    height: 32px; padding: 0 12px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: var(--paper-2); color: var(--ink);
+    font: 500 13px var(--sans); cursor: pointer;
+  }
+  .pbar-head { display: flex; align-items: center; gap: 10px; margin: 0 80px 12px 0; }
+  .pbar-head .badge {
+    flex: none; width: 28px; height: 28px; border-radius: 7px;
+    background: var(--hot); color: #fff;
+    font-weight: 700; font-size: 15px; line-height: 28px; text-align: center;
+  }
+  .pbar-head h2 { font: 700 18px/1.3 var(--serif); margin: 0; }
+  .pbar-head .sub { font-size: 13px; color: var(--ink-soft); }
+  .hint {
+    font-size: 14px; line-height: 1.6; color: var(--ink-soft);
+    margin: 0; padding: 10px 12px; border-radius: 10px; background: var(--paper-2);
+  }
+  .chosen { padding: 10px 12px; border-radius: 12px; border: 1.5px solid var(--hot); }
+  .chosen .name { font: 700 17px/1.4 var(--serif); }
+  .chosen .note { font-size: 13px; line-height: 1.5; color: var(--ink-soft); margin-top: 2px; }
+  .chosen .nav { margin-top: 10px; }
 
   /* 筛选按钮 */
   #filter {
@@ -162,6 +199,7 @@
 <div id="map" role="application" aria-label="地图"></div>
 <button id="filter" aria-pressed="false" onclick="toggleFilter()"><span class="dot"></span><span id="filter-text">只看现在开门的</span></button>
 
+<!-- 餐厅面板 -->
 <section id="sheet" aria-live="polite">
   <div class="grip"></div>
   <button class="close" aria-label="关闭" onclick="closeSheet()">×</button>
@@ -170,11 +208,34 @@
   <p class="comment" id="s-comment"></p>
   <p class="info" id="s-info"></p>
   <p class="hours" id="s-hours"></p>
-  <p class="dest-title">导航到哪里？</p>
-  <div id="s-dests"></div>
+  <button id="btn-parking" class="parking-btn" onclick="enterParking()">
+    <span class="badge">P</span>
+    <span>停车<span class="sub" id="s-parking-sub"></span></span>
+    <span class="chev">›</span>
+  </button>
+  <p class="dest-title">直接导航到餐厅</p>
   <div class="nav">
     <a id="nav-google" target="_blank" rel="noopener">Google 地图</a>
     <a id="nav-apple" class="secondary" target="_blank" rel="noopener">Apple 地图</a>
+  </div>
+</section>
+
+<!-- 选停车位面板：地图上停车点标红，点一个再出导航 -->
+<section id="pbar" aria-live="polite">
+  <div class="grip"></div>
+  <button class="back" onclick="exitParking()">‹ 返回</button>
+  <div class="pbar-head">
+    <span class="badge">P</span>
+    <span><h2>选停车位</h2><span class="sub" id="p-rest"></span></span>
+  </div>
+  <p class="hint" id="p-hint">点地图上红色的街道或 P 点，选你要停的位置</p>
+  <div class="chosen" id="p-chosen" hidden>
+    <div class="name" id="p-name"></div>
+    <div class="note" id="p-note"></div>
+    <div class="nav">
+      <a id="pnav-google" target="_blank" rel="noopener">Google 地图</a>
+      <a id="pnav-apple" class="secondary" target="_blank" rel="noopener">Apple 地图</a>
+    </div>
   </div>
 </section>
 
@@ -193,11 +254,12 @@
     html: `<div class="pin-restaurant${active ? ' active' : ''}"></div>`,
     iconSize: [34, 34], iconAnchor: [17, 34]
   });
-  const parkingIcon = n => L.divIcon({
+  const parkingIcon = hot => L.divIcon({
     className: '',
-    html: `<div class="pin-parking">P</div>`,
-    iconSize: [26, 26], iconAnchor: [13, 13]
+    html: `<div class="pin-parking${hot ? ' hot' : ''}">P</div>`,
+    iconSize: hot ? [34, 34] : [26, 26], iconAnchor: hot ? [17, 17] : [13, 13]
   });
+  const HOT = '#e0262c', WARM = '#d9a400';   // 停车点颜色：选停车位模式 / 平时
 
   const data = window.RESTAURANTS || [];
 
@@ -269,8 +331,10 @@
     document.getElementById('s-hours').textContent = hoursText(r);
   }
   const sheet = document.getElementById('sheet');
-  const parkingLayer = L.layerGroup().addTo(map);
-  let markers = [], activeIdx = null, dest = null;
+  const pbar = document.getElementById('pbar');
+  const parkingLayer = L.layerGroup().addTo(map);   // 停车点（线和 P 点）
+  const chosenLayer = L.layerGroup().addTo(map);    // 选中位置的红圈
+  let markers = [], activeIdx = null, parkingMode = false;
 
   // 放餐厅标记
   data.forEach((r, i) => {
@@ -284,9 +348,56 @@
     map.setView([-34.9285, 138.6007], 12);
   }
 
+  function setNav(prefix, lat, lng, name) {
+    const ll = `${lat},${lng}`;
+    document.getElementById(prefix + '-google').href =
+      `https://www.google.com/maps/dir/?api=1&destination=${ll}`;
+    document.getElementById(prefix + '-apple').href =
+      `https://maps.apple.com/?daddr=${ll}&q=${encodeURIComponent(name)}`;
+  }
+
+  // 把停车点画到地图上，返回包含餐厅和所有停车点的范围。
+  // hot=true 是选停车位模式：标红、放大。平时黄色；平时点到停车点也会直接进选停车位模式。
+  function drawParking(r, hot) {
+    parkingLayer.clearLayers();
+    const bounds = L.latLngBounds([[r.lat, r.lng]]);
+    const color = hot ? HOT : WARM;
+    (r.parking || []).forEach(p => {
+      if (p.type === 'street' && p.coords) {
+        L.polyline(p.coords, { color, weight: hot ? 9 : 7, opacity: .85, interactive: false }).addTo(parkingLayer);
+        // 叠一条透明的宽线接收点击，手指容易点中
+        L.polyline(p.coords, { weight: 30, opacity: 0, bubblingMouseEvents: false })
+          .on('click', e => pickParking(p, snapToLine(p.coords, e.latlng)))
+          .addTo(parkingLayer);
+        p.coords.forEach(c => bounds.extend(c));
+      } else {
+        L.marker([p.lat, p.lng], { icon: parkingIcon(hot), title: p.name })
+          .on('click', () => pickParking(p, L.latLng(p.lat, p.lng)))
+          .addTo(parkingLayer);
+        bounds.extend([p.lat, p.lng]);
+      }
+    });
+    return bounds;
+  }
+
+  // 点在街道附近的位置，吸到线上最近的点
+  function snapToLine(coords, latlng) {
+    const p = map.latLngToLayerPoint(latlng);
+    let best = p, bestD = Infinity;
+    for (let i = 0; i + 1 < coords.length; i++) {
+      const q = L.LineUtil.closestPointOnSegment(p, map.latLngToLayerPoint(coords[i]), map.latLngToLayerPoint(coords[i + 1]));
+      const d = p.distanceTo(q);
+      if (d < bestD) { bestD = d; best = q; }
+    }
+    return map.layerPointToLatLng(best);
+  }
+
   function openRestaurant(i) {
     const r = data[i];
     activeIdx = i;
+    parkingMode = false;
+    pbar.classList.remove('open');
+    chosenLayer.clearLayers();
     markers.forEach((m, k) => m.setIcon(restaurantIcon(k === i)));
 
     document.getElementById('s-name').textContent = r.name;
@@ -294,69 +405,77 @@
     document.getElementById('s-info').textContent = r.info || '';
     showStatus(r);
 
-    // 停车点画到地图上
-    parkingLayer.clearLayers();
-    const bounds = L.latLngBounds([[r.lat, r.lng]]);
-    (r.parking || []).forEach(p => {
-      if (p.type === 'street' && p.coords) {
-        L.polyline(p.coords, { color: '#d9a400', weight: 7, opacity: .85 }).addTo(parkingLayer);
-        p.coords.forEach(c => bounds.extend(c));
-      } else {
-        L.marker([p.lat, p.lng], { icon: parkingIcon(), title: p.name }).addTo(parkingLayer);
-        bounds.extend([p.lat, p.lng]);
-      }
-    });
+    const bounds = drawParking(r, false);
 
-    // 目的地列表：餐厅本身 + 每个停车点
-    const dests = [{ kind: 'r', name: r.name, note: '餐厅本身', lat: r.lat, lng: r.lng }];
-    (r.parking || []).forEach(p => {
-      const ll = p.type === 'street' ? p.coords[0] : [p.lat, p.lng];
-      dests.push({ kind: 'p', name: p.name, note: p.note || '', lat: ll[0], lng: ll[1] });
-    });
-    const box = document.getElementById('s-dests');
-    box.innerHTML = '';
-    dests.forEach((d, k) => {
-      const b = document.createElement('button');
-      b.className = 'dest';
-      b.innerHTML = `<span class="badge ${d.kind}">${d.kind === 'r' ? '●' : 'P'}</span>
-        <span><div class="name"></div><div class="note"></div></span>`;
-      b.querySelector('.name').textContent = d.name;
-      b.querySelector('.note').textContent = d.note;
-      b.onclick = () => selectDest(k);
-      box.appendChild(b);
-    });
-    sheet._dests = dests;
-    // 默认选第一个停车点（有的话），否则餐厅
-    selectDest(dests.length > 1 ? 1 : 0);
+    const n = (r.parking || []).length;
+    document.getElementById('btn-parking').disabled = !n;
+    document.getElementById('s-parking-sub').textContent = n ? `记了 ${n} 个停车位，在地图上选一个` : '没记停车位';
+
+    setNav('nav', r.lat, r.lng, r.name);
 
     sheet.classList.add('open');
     map.fitBounds(bounds.pad(0.4), { maxZoom: 17, paddingBottomRight: [0, window.innerWidth < 720 ? 280 : 0] });
   }
 
-  function selectDest(k) {
-    dest = sheet._dests[k];
-    document.querySelectorAll('.dest').forEach((el, i) => el.classList.toggle('selected', i === k));
-    const ll = `${dest.lat},${dest.lng}`;
-    document.getElementById('nav-google').href =
-      `https://www.google.com/maps/dir/?api=1&destination=${ll}`;
-    document.getElementById('nav-apple').href =
-      `https://maps.apple.com/?daddr=${ll}&q=${encodeURIComponent(dest.name)}`;
+  // 按「停车」：收起餐厅面板，停车点标红，等用户在地图上点
+  function enterParking() {
+    const r = data[activeIdx];
+    if (!r || !(r.parking || []).length) return;
+    parkingMode = true;
+    markers.forEach(m => m.setIcon(restaurantIcon(false)));
+    const bounds = drawParking(r, true);
+    chosenLayer.clearLayers();
+    document.getElementById('p-rest').textContent = r.name;
+    document.getElementById('p-hint').hidden = false;
+    document.getElementById('p-chosen').hidden = true;
+    sheet.classList.remove('open');
+    pbar.classList.add('open');
+    map.fitBounds(bounds.pad(0.35), { maxZoom: 18, paddingBottomRight: [0, window.innerWidth < 720 ? 230 : 0] });
+  }
+
+  // 用户点了地图上的某个停车点 / 街道上的某个位置
+  function pickParking(p, latlng) {
+    if (!parkingMode) enterParking();
+    chosenLayer.clearLayers();
+    L.circleMarker(latlng, { radius: 22, color: HOT, weight: 4, fillColor: HOT, fillOpacity: .15, interactive: false }).addTo(chosenLayer);
+    document.getElementById('p-name').textContent = p.name;
+    document.getElementById('p-note').textContent = p.note || '';
+    setNav('pnav', latlng.lat.toFixed(6), latlng.lng.toFixed(6), p.name);
+    document.getElementById('p-hint').hidden = true;
+    document.getElementById('p-chosen').hidden = false;
+  }
+
+  // 「返回」：回到餐厅面板，停车点变回黄色
+  function exitParking() {
+    parkingMode = false;
+    pbar.classList.remove('open');
+    chosenLayer.clearLayers();
+    if (activeIdx === null) return;
+    markers[activeIdx].setIcon(restaurantIcon(true));
+    drawParking(data[activeIdx], false);
+    sheet.classList.add('open');
   }
 
   function closeSheet() {
     sheet.classList.remove('open');
+    pbar.classList.remove('open');
+    parkingMode = false;
     parkingLayer.clearLayers();
+    chosenLayer.clearLayers();
     markers.forEach(m => m.setIcon(restaurantIcon(false)));
     activeIdx = null;
   }
-  map.on('click', closeSheet);
+  // 选停车位模式下点空白地图不关面板，免得想点街道没点准就退出了
+  map.on('click', () => { if (!parkingMode) closeSheet(); });
 
-  // iPhone 上把 Apple 地图放前面
+  // iPhone 上把 Apple 地图放前面（两个面板的导航按钮都换）
   if (/iPhone|iPad/.test(navigator.userAgent)) {
-    const nav = document.querySelector('.nav');
-    nav.appendChild(document.getElementById('nav-google'));
-    document.getElementById('nav-apple').classList.remove('secondary');
-    document.getElementById('nav-google').classList.add('secondary');
+    document.querySelectorAll('.nav').forEach(nav => {
+      const g = nav.querySelector('[id$="-google"]'), a = nav.querySelector('[id$="-apple"]');
+      nav.appendChild(g);
+      a.classList.remove('secondary');
+      g.classList.add('secondary');
+    });
   }
 </script>
 </body>
