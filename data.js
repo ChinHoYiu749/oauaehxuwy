@@ -400,6 +400,19 @@ window.RESTAURANTS = [
       fri: "11:30-20:30", sat: "11:30-20:30", sun: "11:30-20:30"
     },
     parking: []
+  },
+
+  {
+    name: "SUTBUL HOUSE (AYCE Wagyu Charcoal Korean BBQ)",
+    lat: -34.960457,
+    lng: 138.6419815,
+    comment: "不赖的烤肉（",
+    info: "373 Glen Osmond Rd, Glen Osmond SA 5064。电话 0469 817 160。高峰时段位子少，建议订位。",
+    hours: {
+      mon: "17:00-22:00", tue: "17:00-22:00", wed: "17:00-22:00", thu: "17:00-22:00",
+      fri: "17:00-22:30", sat: "17:00-22:30", sun: "17:00-22:00"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
