@@ -25,6 +25,13 @@ window.PARKING_AREAS = [
         // 南端 Brougham Place 到北端 Barton Terrace，整条街
         coords: [[-34.909400, 138.597120], [-34.906900, 138.596220], [-34.904500, 138.595380], [-34.901940, 138.594480]],
         note: "整条街都有 on street parking。"
+      },
+      {
+        type: "street",
+        name: "LeFevre Terrace 路边位",
+        // 南端 Brougham Place 到北端 Barton Terrace East，整条街
+        coords: [[-34.908390, 138.601390], [-34.905360, 138.600356], [-34.902350, 138.599340]],
+        note: "整条街都有 on street parking。"
       }
     ]
   }
