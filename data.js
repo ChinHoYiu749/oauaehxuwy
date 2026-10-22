@@ -296,6 +296,19 @@ window.RESTAURANTS = [
       fri: "12:00-0:00", sat: "12:00-0:00", sun: "12:00-21:00"
     },
     parking: []
+  },
+
+  {
+    name: "Vietnam Restaurant",
+    lat: -34.8571053,
+    lng: 138.5289306,
+    comment: "自己包卷的那个好好吃aaaaa",
+    info: "73 Addison Rd, Pennington SA 5013。电话 08 8447 3395。",
+    hours: {
+      mon: "closed", tue: "17:00-21:00", wed: "17:00-21:00", thu: "17:00-21:00",
+      fri: "11:00-15:00, 17:00-21:30", sat: "11:00-15:00, 17:00-21:30", sun: "11:00-15:00, 17:00-21:00"
+    },
+    parking: []
   }
 
   // 下一家餐厅从这里加，记得上一家后面加逗号。
