@@ -16,11 +16,25 @@
 // 每个区域：area 区域名 / spots 停车位列表，spots 的写法和餐厅的 parking 一样。
 window.PARKING_RADIUS = 500;
 window.PARKING_AREAS = [
-  // {
-  //   area: "North Adelaide",
+  {
+    area: "North Adelaide",
+    spots: [
+      {
+        type: "street",
+        name: "O'Connell St 路边位",
+        // 南端 Brougham Place 到北端 Barton Terrace，整条街
+        coords: [[-34.909400, 138.597120], [-34.906900, 138.596220], [-34.904500, 138.595380], [-34.901940, 138.594480]],
+        note: "整条街都有 on street parking。"
+      }
+    ]
+  }
+
+  // 下一个区域从这里加，记得上一个后面加逗号。spots 的写法和餐厅的 parking 一样：
+  // ,{
+  //   area: "CBD",
   //   spots: [
-  //     { type: "point",  name: "Brougham Gardens 绿地停车", lat: -34.9104, lng: 138.5953, note: "免费" },
-  //     { type: "street", name: "Tynte St 路边位", coords: [[-34.9065, 138.5950], [-34.9060, 138.5985]], note: "2 小时免费" }
+  //     { type: "point",  name: "Wilson 停车场", lat: -34.9280, lng: 138.6010, note: "周末 $10 封顶" },
+  //     { type: "street", name: "Rundle St 路边位", coords: [[-34.9230, 138.6085], [-34.9225, 138.6130]], note: "晚上 6 点后免费" }
   //   ]
   // }
 ];
