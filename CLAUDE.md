@@ -8,7 +8,7 @@
 - `data.js` — 餐厅清单 + 按区域共用的停车位。**几乎所有维护工作都是改这个文件。**
 - `.claude/commands/add.md` — `/add` 命令：从 Google Maps 链接加一家餐厅。
 - `.claude/commands/parking.md` — `/parking` 命令：把一个区域的停车位写进 `PARKING_AREAS`。
-- `icon.png` — 512×512 图标：浏览器标签、加到主屏幕、微信转发卡片的缩略图都用它（index.html 头部的 og:image 和 body 开头那张隐藏的 img 都指向它，别删）。
+- `preview.jpg` — 整张地图的截图（640×640，带所有图钉和停车位），微信转发卡片的缩略图和「加到主屏幕」的图标用它（index.html 头部的 og:image 和 body 开头那张隐藏的 img 都指向它，别删）。餐厅多了想更新就重新截一张同名覆盖。浏览器标签页图标是 🥢 emoji，不用图片。
 
 页面上的流程：点餐厅 → 面板里按「停车」→ 地图上停车位标红 → 点一个 → 出导航。
 

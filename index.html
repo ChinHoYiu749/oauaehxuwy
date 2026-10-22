@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>🥢</title>
-<!-- 分享到微信 / 加到主屏幕时用的标题、描述、图标。微信卡片的缩略图取页面里第一张 300px 以上的图，所以 body 开头藏了一张。 -->
+<!-- 分享到微信 / 加到主屏幕时用的标题、描述、缩略图。preview.jpg 是整张地图的截图（带图钉和停车位）；
+     微信卡片的缩略图取页面里第一张 300px 以上的图，所以 body 开头藏了一张。浏览器标签页图标直接用 🥢 emoji。 -->
 <meta name="description" content="我的餐厅地图：评价、营业时间、停车位、一键导航">
 <meta property="og:title" content="🥢">
 <meta property="og:description" content="我的餐厅地图：评价、营业时间、停车位、一键导航">
-<meta property="og:image" content="https://chinhoyiu749.github.io/oauaehxuwy/icon.png">
+<meta property="og:image" content="https://chinhoyiu749.github.io/oauaehxuwy/preview.jpg">
 <meta property="og:url" content="https://chinhoyiu749.github.io/oauaehxuwy/">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#1f5c4e">
 <meta name="apple-mobile-web-app-title" content="🥢">
-<link rel="icon" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥢</text></svg>">
+<link rel="apple-touch-icon" href="preview.jpg">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
@@ -209,7 +210,7 @@
 </style>
 </head>
 <body>
-<img src="icon.png" alt="" width="1" height="1" style="position:absolute;opacity:0;pointer-events:none">
+<img src="preview.jpg" alt="" width="1" height="1" style="position:absolute;opacity:0;pointer-events:none">
 <div id="map" role="application" aria-label="地图"></div>
 <button id="filter" aria-pressed="false" onclick="toggleFilter()"><span class="dot"></span><span id="filter-text">只看现在开门的</span></button>
 
